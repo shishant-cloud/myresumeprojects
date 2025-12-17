@@ -1,0 +1,6 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+SQLAlchemy
+bcrypt
+math # This is a built-in module, but included for completeness if you were thinking of a package
