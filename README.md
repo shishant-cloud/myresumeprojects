@@ -1,3 +1,4 @@
+```text
 ├── venv/                       # Python Virtual Environment (Ignored by Git)
 ├── app.py                      # Main Flask Application and Server Logic
 ├── new_expense_tracker.db      # SQLite Database File (Created automatically)
