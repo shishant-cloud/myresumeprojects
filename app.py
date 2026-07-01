@@ -1,26 +1,26 @@
 import bcrypt
 import os
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session
+from flask import Config, Flask, render_template, jsonify, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from sqlalchemy import CheckConstraint, UniqueConstraint, func, cast, Date
+from extension import db, login_manager
 import math # Needed for EMI calculation
 
 # --- Configuration ---
 app = Flask(__name__)
-app.secret_key = 'your_super_secret_key_here_for_sessions'
 
-# --- Database Configuration ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///new_expense_tracker.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
-db = SQLAlchemy(app)
-login_manager = LoginManager()
+db.init_app(app)
+
 login_manager.init_app(app)
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
-login_manager.login_message = 'Please log in to access this page.'
+
+login_manager.login_view = "login"
+login_manager.login_message_category = "info"
+login_manager.login_message = \
+    "Please log in to access this page."
 
 @login_manager.user_loader
 def load_user(user_id):
