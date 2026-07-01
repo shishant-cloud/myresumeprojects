@@ -1,3 +1,12 @@
+from datetime import datetime
+import bcrypt
+
+from flask_login import UserMixin
+from sqlalchemy import CheckConstraint, UniqueConstraint
+
+from config import db
+
+
 # --- Database Models (RESTORED/MODIFIED) ---
 
 class FinancialPlan(db.Model):
