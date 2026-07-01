@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Loan Details</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* General body styling */
+        body.financial-plan-body { 
+            background-color: #f0f4f8; 
+            display: block; 
+            margin: 0;
+            padding-top: 0;
+            text-align: initial;
+        }
+
+        .form-container {
+            max-width: 500px;
+            /* 🟢 THE DEFINITIVE CENTERING FIX 🟢 */
+            margin: 80px auto 40px auto !important; 
+            position: relative !important;
+            
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; 
+            float: none !important; 
+        }
+        
+        h2 { text-align: center; color: #b91c1c; margin-bottom: 25px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #334155; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .form-group { margin-bottom: 20px; }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #dc2626; /* Debt color */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 25px;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover { background-color: #b91c1c; }
+        .info-box {
+            background-color: #fee2e2;
+            border-left: 5px solid #ef4444;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            color: #b91c1c;
+            font-size: 0.9em;
+        }
+        /* Flash message styles */
+        .flash-container { 
+            position: relative; 
+            margin-top: 20px; 
+            text-align: center; 
+            width: 100%;
+        }
+        .custom-flash-message { 
+            max-width: 600px; 
+            margin: 10px auto; 
+            padding: 10px; 
+            border-radius: 5px; 
+            color: white; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            opacity: 1; 
+            transition: opacity 0.5s ease-out; 
+        }
+        .alert-danger { background-color: #e74c3c; }
+        .alert-warning { background-color: #f39c12; }
+        .alert-success { background-color: #2ecc71; }
+
+    </style>
+</head>
+<body class="financial-plan-body">
+    
+    <div class="navbar">
+        <div class="logo"> 
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Expense Tracker Logo" width="100">
+            Expense Tracker
+        </div>
+        <div class="nav-links">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('add') }}">Add Expense</a></li>
+                <li><a href="{{ url_for('view') }}">View Expenses</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="custom-flash-message alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="form-container">
+        <h2>Set Loan Details</h2>
+        <p style="text-align: center; color: #64748b;">
+            Enter your primary loan details to enable automatic EMI and interest calculations.
+        </p>
+
+        <form action="{{ url_for('set_loan_plan') }}" method="POST">
+            <div class="form-group">
+                <label for="loan_principal">Loan Principal Amount (₹)</label>
+                <input type="number" id="loan_principal" name="loan_principal" 
+                       value="{{ '%.2f'|format(plan.loan_principal) if plan else '0.00' }}" 
+                       min="0" step="0.01" required>
+                <div class="info-box">
+                    The total original amount of the loan you want to track.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="annual_interest_rate">Annual Interest Rate (%)</label>
+                <input type="number" id="annual_interest_rate" name="annual_interest_rate" 
+                       value="{{ '%.2f'|format(plan.annual_interest_rate) if plan else '0.00' }}" 
+                       min="0" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="loan_tenure_months">Loan Tenure (Months)</label>
+                <input type="number" id="loan_tenure_months" name="loan_tenure_months" 
+                       value="{{ plan.loan_tenure_months if plan else '12' }}" 
+                       min="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="monthly_net_income">Your Monthly Net Income (₹)</label>
+                <input type="number" id="monthly_net_income" name="monthly_net_income" 
+                       value="{{ '%.2f'|format(plan.monthly_net_income) if plan else '0.00' }}" 
+                       min="0" step="0.01" required>
+                <div class="info-box">
+                    Used to gauge the affordability of your EMI.
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">{{ 'Update Loan Plan' if plan else 'Save Loan Plan' }}</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.custom-flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    // Remove element from DOM after transition
+                    setTimeout(() => msg.remove(), 500); 
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

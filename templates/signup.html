@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup Page</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+     <style>
+     
+
+.signup-container {
+    background: #ffffff;
+    width: 320px;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    margin: 40px;               /* distance from top and right */
+    position: relative;
+    animation: slideIn 0.6s ease;
+    margin-left: 1165px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 13px;
+    color: #555;
+    display: block;
+    margin-top: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* MODIFIED FLASH STYLES FOR CONSISTENCY */
+.flash-container {
+    position: relative; 
+    margin-top: 20px; 
+    text-align: center;
+}
+.custom-flash-message {
+    max-width: 600px;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+.alert-danger { background-color: #e74c3c; }
+.alert-warning { background-color: #f39c12; }
+.alert-success { background-color: #2ecc71; }
+     </style>
+</head>
+<body class="signup_body">
+
+     <div class="navbar">
+    <div class="logo"> <img src="static\images\logo2.png" alt="Expense Tracker Logo" width="100">Expense Tracker</div>
+    <div class="nav-links">
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('add') }}">Add Expense</a></li>
+        <li><a href="{{ url_for('view') }}">View Expenses</a></li>
+        </ul>
+    </div>
+  </div>
+    
+  <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="custom-flash-message alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+  
+      <div class="signup-container">
+        <h2>Signup</h2>
+
+      <form action="{{ url_for('signup') }}" method="POST">
+            <label>Username:</label>
+            <input type="text" name="username" placeholder="Enter Username" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="Enter Email" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" placeholder="Enter Password" required>
+
+            <label>Confirm Password:</label>
+            <input type="password" name="confirm_password" placeholder="Re-enter Password" required>
+
+            <label>Country:</label>
+            <select name="country" required>
+                <option value="">Select Country</option>
+                <option value="India">India</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="Germany">Germany</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.custom-flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    // Remove element from DOM after transition
+                    setTimeout(() => msg.remove(), 500); 
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

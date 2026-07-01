@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Expenses</title>
+
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        body.health_body { background-color: #fdffee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h2 { text-align:center; color:#2c3e50; margin-bottom:20px; }
+        .dashboard-cards { display:flex; gap:20px; justify-content:space-between; margin-bottom:30px; }
+        @media(max-width:768px){ .dashboard-cards{ flex-direction:column; } }
+
+        /* Added flash message styles */
+        .flash-container { position: relative; margin-top: 20px; text-align: center; }
+        .custom-flash-message { max-width: 600px; margin: 10px auto; padding: 10px; border-radius: 5px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); opacity: 1; transition: opacity 0.5s ease-out; }
+        .alert-danger { background-color: #e74c3c; }
+        .alert-warning { background-color: #f39c12; }
+        .alert-success { background-color: #2ecc71; }
+    </style>
+</head>
+
+<body class="health_body">
+
+    <div class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" width="85" alt="Logo">
+            Expense Tracker
+        </div>
+
+        <div class="nav-links">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('add') }}">Add Expense</a></li>
+                <li><a href="{{ url_for('view') }}">View Expenses</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="custom-flash-message alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="main-container">
+
+        <h2>Health & Medical Expenses</h2>
+
+        <section class="dashboard-cards">
+            <div class="card total-card">
+                <h3>Total Health Spending</h3><br>
+                <p>₹&nbsp;&nbsp;{{ "%.2f"|format(total_healthcare_spending|default(0)) }}</p>
+            </div>
+
+            <div class="card expense-count-card">
+                <h3>Highest Medical Bill</h3><br>
+                <p>₹&nbsp;&nbsp;{{ "%.2f"|format(highest_healthcare_expense|default(0)) }}</p>
+            </div>
+
+            <div class="card expense-count-card">
+                <h3>Visits Count</h3>
+                <p>{{ healthcare_expenses|length if healthcare_expenses else 0 }}</p>
+            </div>
+        </section>
+
+        <section>
+            <h3 style="margin-bottom:20px;">Health Transactions (Date-wise)</h3>
+
+            {% if healthcare_expenses %}
+                <table class="expense-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th><th>Description</th><th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in healthcare_expenses %}
+                        <tr>
+                            <td data-label="Date">{{ e.date }}</td>
+                            <td data-label="Description">{{ e.description }}</td>
+                            <td data-label="Amount">₹{{ "%.2f"|format(e.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="text-align:center; margin-top:30px;">
+                    <p>No health-related expenses found.</p><br><br>
+                    <a href="{{ url_for('add') }}" class="btn">Add Health Expense</a>
+                    <br>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.custom-flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    // Remove element from DOM after transition
+                    setTimeout(() => msg.remove(), 500); 
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

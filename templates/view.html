@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Expenses List</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+         /* Added temporary styles for the flash messages until you incorporate them into style.css */
+        .flash-container {
+            position: relative; 
+            margin-top: 20px; 
+            text-align: center;
+        }
+        .custom-flash-message {
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        .alert-danger { background-color: #e74c3c; }
+        .alert-warning { background-color: #f39c12; }
+        .alert-success { background-color: #2ecc71; }
+    </style>
+</head>
+<body class="view_body">
+    <div class="navbar">
+     <div class="logo"> <img src="static\images\logo2.png" alt="Expense Tracker Logo" width="100">Expense Tracker</div>
+      <div class="nav-links">
+         <ul>
+             <li><a href="{{ url_for('home') }}">Home</a></li>
+             <li><a href="{{ url_for('add') }}">Add Expense</a></li>
+             <li><a href="{{ url_for('view') }}">View Expenses</a></li>
+             {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+         </ul>
+      </div>
+  </div>
+  
+  <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="custom-flash-message alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+<div style="padding: 20px 50px; max-width: 1200px; margin: 0 auto;">
+    <h2 style="text-align: center; color: #34495e; margin-bottom: 30px; font-size: 2em; font-weight: 300;">All Expenses</h2>
+    
+    <table style="width: 100%; margin: 20px auto; border-collapse: separate; border-spacing: 0; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; font-family: 'Segoe UI', sans-serif;">
+        <thead>
+            <tr>
+                <th style="padding: 15px; text-align: left; background-color: #000; color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Date</th>
+                <th style="padding: 15px; text-align: left; background-color: #000; color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Amount</th>
+                <th style="padding: 15px; text-align: left; background-color: #000; color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Category</th>
+                <th style="padding: 15px; text-align: left; background-color: #000; color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Description</th>
+                <th style="padding: 15px; text-align: left; background-color: #000; color: white; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-top-right-radius: 12px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr {% if loop.index is even %} style="background-color: #f9f9f9;" {% else %} style="background-color: white;" {% endif %}>
+
+                <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ebf0f4;">{{ expense.date }}</td>
+                <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ebf0f4;">₹ {{ "%.2f"|format(expense.amount) }}</td>
+                <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ebf0f4;">{{ expense.category }}</td>
+                <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ebf0f4;">{{ expense.description }}</td>
+                
+                <td style="padding: 15px; text-align: left; border-bottom: 1px solid #ebf0f4;">
+                    <form method="POST" action="{{ url_for('delete_expense', expense_id=expense.id) }}" 
+                          style="margin: 0;" 
+                          onsubmit="return confirm('Are you sure you want to delete this expense of ₹{{ '%.2f'|format(expense.amount) }}?')">
+                        <button type="submit" 
+                                style="background-color: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: background-color 0.2s;">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{{ url_for('add') }}" 
+           style="display: inline-block; width: 200px; padding: 12px 20px; background-color: #2ecc71; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; text-align: center; box-shadow: 0 4px 6px rgba(46, 204, 113, 0.4); transition: background-color 0.3s, transform 0.2s;">
+           Add New Expense
+        </a>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide flash messages after 5 seconds
+        const flashMessages = document.querySelectorAll('.custom-flash-message');
+        flashMessages.forEach(msg => {
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                // Remove element from DOM after transition
+                setTimeout(() => msg.remove(), 500); 
+            }, 5000);
+        });
+        
+        // No visualization code needed here.
+    });
+</script>
+
+</body>
+</html>
