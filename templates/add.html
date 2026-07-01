@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+     <style>
+         /* Added temporary styles for the flash messages until you incorporate them into style.css */
+        .flash-container {
+            position: relative; /* Not fixed/absolute in relation to viewport */
+            margin-top: 20px; /* Space below navbar */
+            text-align: center;
+        }
+        .custom-flash-message {
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        .alert-danger { background-color: #e74c3c; }
+        .alert-warning { background-color: #f39c12; }
+        .alert-success { background-color: #2ecc71; }
+     </style>
+</head>
+<body class="add_body">
+    <div class="navbar">
+    <div class="logo"> <img src="static/images/logo2.png" alt="Expense Tracker Logo" width="100">Expense Tracker</div>
+    <div class="nav-links">
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('add') }}">Add Expense</a></li>
+        <li><a href="{{ url_for('view') }}">View Expenses</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+  
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="custom-flash-message alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="addform">
+        <h1>Add Expenses</h1>
+        <br>
+        
+        <form action="{{ url_for('add') }}" method="POST">
+            
+            <label for="date">Date:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="date" id="date" name="date" required value="{{ today }}"><br><br>
+
+            <label for="amount">Amount:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="number" id="amount" name="amount" required min="0.01" step="0.01"><br><br>
+
+            <label for="category">Category:</label>&nbsp;&nbsp;&nbsp;
+            <select id="category" name="category" required>
+                <option value="">-- Select Category --</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select><br><br>
+            
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" rows="3"></textarea><br><br><br>
+
+           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button type="submit" class="btn">Add Expense</button><br>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.custom-flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    // Remove element from DOM after transition
+                    setTimeout(() => msg.remove(), 500); 
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
