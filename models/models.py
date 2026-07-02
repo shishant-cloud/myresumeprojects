@@ -4,7 +4,7 @@ import bcrypt
 from flask_login import UserMixin
 from sqlalchemy import CheckConstraint, UniqueConstraint
 
-from extension import db
+from myresumeprojects.extension import db
 
 
 # --- Database Models (RESTORED/MODIFIED) ---

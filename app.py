@@ -5,7 +5,7 @@ from flask import Config, Flask, render_template, jsonify, request, redirect, ur
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from sqlalchemy import CheckConstraint, UniqueConstraint, func, cast, Date
-from extension import db, login_manager
+from myresumeprojects.extension import db, login_manager
 from models.models import User, Category, Expense, Bill, FinancialPlan
 import math
 
