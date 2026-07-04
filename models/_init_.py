@@ -1,11 +1,12 @@
 from flask import Flask, app
 from models.models import User, Category, Expense, Bill, FinancialPlan
-from app import db, login_manager
+
+from extension import db
+from models.models import Category
+from extension import db, login_manager
 
 
-
-
-def init_db():
+def init_db(app):
     with app.app_context():
         # IMPORTANT: When the schema changes, you must delete the old .db file first.
         db.create_all() 

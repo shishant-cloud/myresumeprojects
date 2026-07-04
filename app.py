@@ -1,15 +1,16 @@
 import bcrypt
 import os
 from datetime import datetime
-from flask import Config, Flask, render_template, jsonify, request, redirect, url_for, flash, session
+from flask import render_template, jsonify, request, redirect, url_for, flash, session
+from flask import Flask
+from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from sqlalchemy import CheckConstraint, UniqueConstraint, func, cast, Date
-from myresumeprojects.extension import db, login_manager
+from extension import db, login_manager
 from models.models import User, Category, Expense, Bill, FinancialPlan
 import math
-
-from myresumeprojects.models._init_ import init_db # Needed for EMI calculation
+from models._init_ import init_db
 
 
 app = Flask(__name__)
