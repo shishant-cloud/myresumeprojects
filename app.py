@@ -11,7 +11,8 @@ from extension import db, login_manager
 from models.models import User, Category, Expense, Bill, FinancialPlan
 import math
 from models._init_ import init_db
-
+from routes.auth_routes import auth_bp
+from routes.auth_routes import auth_bp
 
 app = Flask(__name__)
 
@@ -20,6 +21,8 @@ app.config.from_object(Config)
 db.init_app(app)
 
 login_manager.init_app(app)
+
+app.register_blueprint(auth_bp)
 
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
@@ -95,12 +98,7 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('home'))
+
 
 @app.route('/add', methods=['GET', 'POST'])
 @login_required

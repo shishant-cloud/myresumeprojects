@@ -3,7 +3,7 @@ from flask_login import current_user, login_user
 from models.models import User
 from extension import db
 from flask_login import login_user, logout_user, current_user
-
+from flask_login import login_required
 
 
 
@@ -69,3 +69,18 @@ def login():
             flash('Invalid username/email or password.', 'danger')
 
     return render_template('login.html')
+
+
+@login_required
+def logout():
+
+    logout_user()
+
+    flash(
+        'You have been logged out.',
+        'success'
+    )
+
+    return redirect(
+        url_for('home')
+    )
