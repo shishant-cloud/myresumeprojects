@@ -13,6 +13,7 @@ import math
 from models._init_ import init_db
 from routes.auth_routes import auth_bp
 from routes.auth_routes import auth_bp
+from routes.expense_routes import expense_bp
 
 app = Flask(__name__)
 
@@ -23,6 +24,12 @@ db.init_app(app)
 login_manager.init_app(app)
 
 app.register_blueprint(auth_bp)
+
+app.register_blueprint(
+    expense_bp
+)
+
+
 
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
