@@ -1,8 +1,8 @@
 from flask import Blueprint
 
 from services.expense_service import (
-    view,
-    delete_expense
+    delete_expense,
+    view_expenses
 )
 
 expense_bp = Blueprint(
@@ -12,7 +12,8 @@ expense_bp = Blueprint(
 
 expense_bp.route(
     "/view"
-)(view)
+)(view_expenses)
+
 
 expense_bp.route(
     "/delete_expense/<int:expense_id>",

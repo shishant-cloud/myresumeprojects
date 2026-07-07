@@ -19,7 +19,7 @@ from models.models import (
 )
 
 
-def view():
+def view_expenses():
     """Renders the detailed expense table page (no charts)."""
     expenses_data = db.session.query(Expense, Category.name.label('category_name'))\
         .join(Category, Expense.category_id == Category.id)\
